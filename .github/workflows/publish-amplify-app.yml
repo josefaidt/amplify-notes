@@ -1,0 +1,37 @@
+name: Deploy AWS Amplify project
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+      - run: yarn global add @aws-amplify/cli
+      - name: Install project dependencies
+        run: yarn install --production --frozen-lockfile
+      - name: Initialize Amplify project
+        run: sh scripts/amplify/init.sh
+        env:
+          ENV_NAME: ${{ github.ref_name }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Push Amplify project
+        run: amplify publish -y
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Commit updated Amplify files
+        run: |
+          changed=$(git status --porcelain)
+          if [[ -n "$changed" ]]; then
+            git config --global user.name 'GitHub Actions'
+            git config --global user.email 'josefaidt@users.noreply.github.com'
+            if [[ ! `git diff --quiet HEAD -- amplify` ]]; then
+              git add amplify
+              git commit -m "[automated] update amplify backend"
+              git push
+            fi
+          fi

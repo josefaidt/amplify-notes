@@ -1,0 +1,23 @@
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+type Todo @model @auth(rules: [{ allow: owner }]) {
+  name: String!
+  description: String
+  status: Status
+}
+
+type Book @model @auth(rules: [{ allow: owner }]) {
+  name: String!
+  description: String
+  status: Status
+  notes: [Note] @hasMany
+}
+
+type Note @model @auth(rules: [{ allow: owner }]) {
+  title: String!
+  content: String
+  status: Status
+}
