@@ -13,11 +13,12 @@ type Book @model @auth(rules: [{ allow: owner }]) {
   name: String!
   description: String
   status: Status
-  notes: [Note] @hasMany
+  pages: [Page] @hasMany
 }
 
-type Note @model @auth(rules: [{ allow: owner }]) {
-  title: String!
-  content: String
+type Page @model @auth(rules: [{ allow: owner, ownerField: "author" }]) {
+  title: String
+  content: String @default(value: "# Hello, World!")
   status: Status
+  author: String
 }

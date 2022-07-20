@@ -1,0 +1,12 @@
+{
+  "resourceName": "notesstorage",
+  "policyUUID": "807ea41c",
+  "bucketName": "notesstoragebucket",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "READ"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

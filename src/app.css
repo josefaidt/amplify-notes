@@ -1,0 +1,45 @@
+:root {
+  --tokyo-night-foreground: #a9b1d6;
+  /* --tokyo-night-background: rgba(36, 40, 59, 1); */
+  /* --tokyo-night-background: #24283b; */
+  --tokyo-night-background: #1a1b26;
+
+  --tokyo-night-purple: #bb9af7;
+  --tokyo-night-black: #414868;
+  --tokyo-night-teal: #73daca;
+
+  /* --amplify-colors-background-primary: var(--tokyo-night-background); */
+
+  /* Amplify Authenticator Overrides */
+  /* --amplify-components-tabs-item-active-color: var(--tokyo-night-purple);
+  --amplify-components-tabs-item-active-border-color: var(--tokyo-night-purple);
+  --amplify-components-tabs-item-hover-color: var(--tokyo-night-foreground);
+  --amplify-components-authenticator-state-inactive-background-color: var(
+    --tokyo-night-background
+  );
+  --amplify-components-tabs-item-color: var(--tokyo-night-foreground);
+  --amplify-components-tabs-item-border-color: var(--tokyo-night-background); */
+
+  /* Amplify Button */
+  /* --amplify-components-button-primary-hover-background-color: var(
+    --tokyo-night-black
+  );
+  --amplify-components-button-primary-background-color: var(
+    --tokyo-night-black
+  ); */
+}
+
+body {
+  background-color: var(--tokyo-night-background);
+  color: var(--tokyo-night-foreground);
+
+  margin: 0;
+}
+
+a {
+  color: var(--tokyo-night-purple);
+}
+
+section .milkdown {
+  box-shadow: unset;
+}
