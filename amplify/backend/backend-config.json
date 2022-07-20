@@ -58,5 +58,12 @@
       "dependsOn": []
     }
   },
-  "function": {}
+  "function": {},
+  "hosting": {
+    "amplifyhosting": {
+      "service": "amplifyhosting",
+      "type": "cicd",
+      "lastPushTimeStamp": "2022-07-20T13:14:41.903Z"
+    }
+  }
 }
