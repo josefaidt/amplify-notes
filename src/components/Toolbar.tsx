@@ -1,13 +1,17 @@
 import { createContext, useState, useEffect, useContext } from 'react'
-import type { FunctionComponent, PropsWithChildren, Element } from 'react'
+import type * as React from 'react'
 
-const ToolbarActionsStateContext = createContext<FunctionComponent[]>([])
-const ToolbarActionsSetStateContext = createContext(null)
+const ToolbarActionsStateContext = createContext<React.FunctionComponent[]>([])
+const ToolbarActionsSetStateContext: React.Context<any> = createContext(null)
 
-export const ToolbarProvider: FunctionComponent<PropsWithChildren> = ({
+type ToolbarProviderProps = {
+  children: JSX.Element[] | JSX.Element
+}
+
+export const ToolbarProvider: React.FC<ToolbarProviderProps> = ({
   children,
 }) => {
-  const [actions, setActions] = useState<FunctionComponent[]>([])
+  const [actions, setActions] = useState<React.FunctionComponent[]>([])
 
   return (
     <ToolbarActionsStateContext.Provider value={actions}>
@@ -28,40 +32,40 @@ export const useToolbarActions = () => {
 }
 
 type ToolbarActions = {
-  add: (action: Element | FunctionComponent) => void
-  remove: (action: Element | FunctionComponent) => void
+  add: (action: () => JSX.Element) => void
+  remove: (action: () => JSX.Element) => void
 }
 
-export const useToolbar = (): [any[], ToolbarActions] => {
+export const useToolbar = (): [React.FC[], ToolbarActions] => {
   const [state, setState] = useToolbarActions()
 
   return [
     state,
     {
-      add: (action: Element | FunctionComponent) => {
-        setState((actions) => [...actions, action])
+      add: (action: () => JSX.Element) => {
+        setState((actions: JSX.Element[]) => [...actions, action])
       },
-      remove: (action: Element | FunctionComponent) => {
-        setState((actions) => actions.filter((a) => a !== action))
+      remove: (action: () => JSX.Element) => {
+        setState((actions: Array<() => JSX.Element>) =>
+          actions.filter((a) => a !== action)
+        )
       },
     },
   ]
 }
 
-export const Toolbar: FunctionComponent = ({ children }) => {
-  const [actions, setActions] = useToolbarActions()
+type ToolbarProps = {
+  children: JSX.Element[] | JSX.Element
+}
 
-  console.log('actions are', actions)
+export const Toolbar: React.FC<ToolbarProps> = ({ children }) => {
+  const [actions] = useToolbar()
 
-  useEffect(() => {
-    return () => {
-      setActions([])
-    }
-  }, [])
+  console.log('TOOLBAR RERENDER', actions)
 
   return (
     <div>
-      {actions?.map((Action, idx) => (
+      {actions?.map((Action: React.FC, idx: number) => (
         <Action key={idx} />
       ))}
       {children}

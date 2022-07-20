@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useCallback, useState, useEffect, useRef } from 'react'
 import { API } from 'aws-amplify'
 import { useRouter } from 'next/router'
 import {
@@ -18,19 +18,18 @@ import { tokyo } from '@milkdown/theme-tokyo'
 import { useEditor, ReactEditor } from '@milkdown/react'
 import { commonmark } from '@milkdown/preset-commonmark'
 import { insert } from '@milkdown/utils'
-import Link from 'next/link'
 import { useToolbar } from '../../components/Toolbar'
 import { getPage as QUERY_GET_PAGE } from '../../graphql/queries'
 import { updatePage as MUTATION_UPDATE_PAGE } from '../../graphql/mutations'
-import * as s from './page.module.css'
-import type { Element, FunctionComponent } from 'react'
+import s from './page.module.css'
+import type { NextPage } from 'next'
 
 async function getPage(id: string) {
   if (!id) throw new Error('Invalid ID')
-  const { data, error } = await API.graphql({
+  const { data, error } = (await API.graphql({
     query: QUERY_GET_PAGE,
     variables: { id },
-  })
+  })) as any
   if (error) {
     console.error(error)
     return null
@@ -47,10 +46,18 @@ async function getPage(id: string) {
 //   }
 // }
 
-const Post: FunctionComponent = () => {
+const STORAGE_AUTOSAVE_KEY = 'AmplifyNotes__isAutoSaveEnabled'
+
+const Page: NextPage = () => {
   const [page, setPage] = useState<any>()
   const [content, setContent] = useState<any>('')
-  const [isAutoSaveEnabled, setIsAutoSaveEnabled] = useState(false)
+  const [isAutoSaveEnabled, setIsAutoSaveEnabled] = useState(() => {
+    if (window) {
+      return (
+        window.localStorage.getItem(STORAGE_AUTOSAVE_KEY) === 'true' || false
+      )
+    }
+  })
   const [isSaved, setIsSaved] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [, toolbar] = useToolbar()
@@ -75,8 +82,8 @@ const Post: FunctionComponent = () => {
   const router = useRouter()
   const { pid } = router.query as { pid: string }
 
-  const save: () => Promise<void> = async () => {
-    const { data, error } = await API.graphql({
+  const save: () => Promise<void> = useCallback(async () => {
+    const { data, error } = (await API.graphql({
       query: MUTATION_UPDATE_PAGE,
       variables: {
         input: {
@@ -84,7 +91,7 @@ const Post: FunctionComponent = () => {
           content: content,
         },
       },
-    })
+    })) as any
     if (error) {
       // there was an error handling save
       console.error('error saving', error)
@@ -93,7 +100,7 @@ const Post: FunctionComponent = () => {
     console.log('saved', data)
     setIsLoading(false)
     setIsSaved(true)
-  }
+  }, [page, content])
 
   const handleOnBlur = () => {
     if (isAutoSaveEnabled) {
@@ -113,7 +120,7 @@ const Post: FunctionComponent = () => {
       setContent(Page.content)
       setIsLoading(false)
     })()
-  }, [pid])
+  }, [pid, page])
 
   useEffect(() => {
     try {
@@ -131,7 +138,7 @@ const Post: FunctionComponent = () => {
     }, 3000)
 
     return () => clearTimeout(delayDebounceFn)
-  }, [content])
+  }, [content, isAutoSaveEnabled, save])
 
   useEffect(() => {
     // effect to remove/hide the "Saved!" message after 3 seconds
@@ -144,12 +151,33 @@ const Post: FunctionComponent = () => {
     return () => displayTimerFn && clearTimeout(displayTimerFn)
   }, [isSaved])
 
-  const SaveButton = () => <button onClick={save}>Save</button>
+  const SaveButton = useCallback(
+    () => <button onClick={save}>Save</button>,
+    [save]
+  )
+  const AutoSaveToggleButton = useCallback(
+    () => (
+      <button
+        onClick={() => {
+          setIsAutoSaveEnabled(!isAutoSaveEnabled)
+          localStorage.setItem(STORAGE_AUTOSAVE_KEY, `${isAutoSaveEnabled}`)
+        }}
+      >
+        {isAutoSaveEnabled ? 'Disable' : 'Enable'} Auto-Save
+      </button>
+    ),
+    [isAutoSaveEnabled]
+  )
+
   useEffect(() => {
+    // we _only_ want this to run on mount. If we provide the toolbar as a dependency it will run infinitely
     toolbar.add(SaveButton)
+    toolbar.add(AutoSaveToggleButton)
     return () => {
       toolbar.remove(SaveButton)
+      toolbar.remove(AutoSaveToggleButton)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // if (isLoading) return <p>loading...</p>
@@ -162,4 +190,4 @@ const Post: FunctionComponent = () => {
   )
 }
 
-export default Post
+export default Page

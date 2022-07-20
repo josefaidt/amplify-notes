@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
@@ -47,16 +48,6 @@ export const onCreateBook = /* GraphQL */ `
       description
       status
       pages {
-        items {
-          title
-          content
-          status
-          author
-          id
-          createdAt
-          updatedAt
-          bookPagesId
-        }
         nextToken
       }
       id
@@ -73,16 +64,6 @@ export const onUpdateBook = /* GraphQL */ `
       description
       status
       pages {
-        items {
-          title
-          content
-          status
-          author
-          id
-          createdAt
-          updatedAt
-          bookPagesId
-        }
         nextToken
       }
       id
@@ -99,16 +80,6 @@ export const onDeleteBook = /* GraphQL */ `
       description
       status
       pages {
-        items {
-          title
-          content
-          status
-          author
-          id
-          createdAt
-          updatedAt
-          bookPagesId
-        }
         nextToken
       }
       id

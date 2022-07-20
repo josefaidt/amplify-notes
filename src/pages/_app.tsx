@@ -5,11 +5,12 @@ import { ToolbarProvider, Toolbar } from '../components/Toolbar'
 import awsExports from '../aws-exports'
 import '@aws-amplify/ui-react/styles.css'
 import '../app.css'
-import * as s from './app.module.css'
+import s from './app.module.css'
+import type { AppProps } from 'next/app'
 
 Amplify.configure(awsExports)
 
-export default function App({ Component, pageProps }) {
+const App = ({ Component, pageProps }: AppProps) => {
   return (
     <ToolbarProvider>
       <Authenticator>
@@ -34,3 +35,5 @@ export default function App({ Component, pageProps }) {
     </ToolbarProvider>
   )
 }
+
+export default App

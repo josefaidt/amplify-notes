@@ -4,13 +4,12 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { listPages as QUERY_LIST_PAGES } from '../graphql/queries'
 import { createPage as MUTATION_CREATE_PAGE } from '../graphql/mutations'
-import * as s from './index.module.css'
-import type { FunctionComponent } from 'react'
+import type { NextPage } from 'next'
 
 const list = async () => {
-  const { data, error } = await API.graphql({
+  const { data, error } = (await API.graphql({
     query: QUERY_LIST_PAGES,
-  })
+  })) as any
   if (error) {
     console.error(error)
     return null
@@ -18,17 +17,17 @@ const list = async () => {
   return data.listPages.items
 }
 
-const HomePage: FunctionComponent = () => {
+const HomePage: NextPage = () => {
   const [pages, setPages] = useState<any[]>()
   const router = useRouter()
 
   const createNewPost = async () => {
-    const { data, error } = await API.graphql({
+    const { data, error } = (await API.graphql({
       query: MUTATION_CREATE_PAGE,
       variables: {
         input: {},
       },
-    })
+    })) as any
     if (error) {
       console.error(error)
       return
