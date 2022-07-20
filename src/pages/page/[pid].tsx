@@ -124,6 +124,7 @@ const Post: FunctionComponent = () => {
   }, [isLoading])
 
   useEffect(() => {
+    // effect to auto-save document after 3 second delay (i.e. user stopped typing)
     if (!isAutoSaveEnabled) return
     const delayDebounceFn = setTimeout(() => {
       save()
@@ -133,6 +134,7 @@ const Post: FunctionComponent = () => {
   }, [content])
 
   useEffect(() => {
+    // effect to remove/hide the "Saved!" message after 3 seconds
     if (!isSaved) return
 
     const displayTimerFn = setTimeout(() => {
