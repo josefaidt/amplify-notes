@@ -61,8 +61,6 @@ type ToolbarProps = {
 export const Toolbar: React.FC<ToolbarProps> = ({ children }) => {
   const [actions] = useToolbar()
 
-  console.log('TOOLBAR RERENDER', actions)
-
   return (
     <div>
       {actions?.map((Action: React.FC, idx: number) => (
